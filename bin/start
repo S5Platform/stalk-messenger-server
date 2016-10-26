@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+var fs    = require('fs');
+var net   = require('net');
+var argv  = require('optimist').argv;
+var stalkServer = require('../lib/index');
+var utils = require('../lib/utils');
+
+var daemon = require('../lib/daemon/daemon-handler');
+
+var help = [
+  "usage: start [type] [options] ",
+  "",
+  "Starts a STALK Server using the specified command-line options",
+  "",
+  "Examples:",
+  "  $ start --session",
+  "  $ start --session --config ../config.json",
+  "  $ HOST=im.stalk.io PORT=8000 MASTER_KEY=ABCDE12345 start --session ",
+  "  $ start --channel",
+  "  $ HOST=channel.stalk.io PORT=9000 start session ",
+  "",
+  "Options:",
+  "  --port   PORT       Port that the channel server should run on",
+  "  --config OUTFILE    Location of the configuration file for the server",
+  "  --host   DOMAIN     Hostname",
+  "  -h, --help          You're staring at it",
+  "",
+  "Environments:",
+  "  TYPE         server type [session | channel] (default : session)",
+  "  HOST         hostname (default : 0.0.0.0)",
+  "  PORT         port (default : 0.0.0.0)",
+  "  ZOOKEEPER    zookeeper address (default : 127.0.0.1:2181)",
+  "  REDIS        redis address (default : 127.0.0.1:6379)",
+  "  HOME_DIR     log directory (default : ~/.xpush)",
+  "",
+  " * only for session server * ",
+  "  APP_ID       application id (default : STALK)",
+  "  MASTER_KEY   master key  (default : s3cR3T)",
+  "  MONGODB      mongodb address (default : mongodb://localhost:27017/stalk-messenger )",
+  ""
+].join('\n');
+
+if (argv.h || argv.help) {
+  return console.log(help);
+}
+
+// (optional) load configutation file
+
+var config = {};
+if( argv.config ){
+  try {
+    var data = fs.readFileSync(argv.config);
+    config = JSON.parse(data.toString());
+  } catch (ex) {
+    console.error('Error starting session server: ' + ex);
+    process.exit(1);
+  }
+}
+
+// setting options
+
+var options = {};
+options['host'] = argv.host || config.host || process.env.HOST || utils.getIP();
+options['port'] = argv.port || config.port || process.env.PORT || 8080;
+
+options['zookeeper'] = config.zookeeper || process.env.ZOOKEEPER;
+options['redis'] = config.redis || process.env.REDIS;
+
+/* ONLY FOR SESSION SERVER */
+options['mongodb'] = config.mongodb || process.env.MONGODB;
+options['app'] = config.app || process.env.APP_ID || 'STALK';
+options['master'] = config.master || process.env.MASTER_KEY || 's3cR3T';
+options['push'] = utils.getPushConfig();
+
+var homeDir = config.home || process.env.HOME_DIR;
+if (homeDir){
+  if(homeDir.startsWith("/")){
+    options['home'] = homeDir;
+  }else{
+    return console.error('\n\n [ERROR] home directory must to be full paths from root(/) \n\n');
+  }
+}
+
+options['type'] = argv.type || config.type || process.env.TYPE || 'session';
+if(argv.session) options['type'] = 'session';
+if(argv.channel) options['type'] = 'channel';
+
+// start server
+console.log('\n    ##### Options #####\n',options,'\n\n');
+
+options['logo'] = [
+  " ",
+  " ,  ",
+  " |\\  ",
+  " \\ | ",
+  "  | \\ /          OPENSOURCE MESSENGER PROJECT",
+  "   \\|/    _,                   "+options['type']+" server",
+  "    /  __/ /      _____________   __   __ __  ",
+  "   | _/ _.'      / __/_  __/ _ | / /  / //_/  ",
+  "   |/__/        _\\ \\  / / / __ |/ /__/ ,<    ",
+  "    \\          /___/ /_/ /_/ |_/____/_/|_|   ",
+  " ",
+  " "
+].join('\n');
+
+
+var checkPort = function (callback, port) {
+  port = port || 8080;
+
+  var tester = net.createServer()
+    .once('error', function (err) {
+
+      checkPort(callback, port + 100);
+
+    })
+    .once('listening', function () {
+      tester.once('close', function () {
+          callback(port);
+        })
+        .close();
+    })
+    .listen(port);
+};
+
+
+if( options['type'] == 'channel' ){
+
+  checkPort(function (port) {
+
+    options['port'] = port;
+
+    daemon.startDaemon(options, function (err) {
+      if (err) {
+        console.error('\n\n process daemon was not yet finished \n');
+        if (err.code == 'PID_EXISTED') {
+          console.info(err.message);
+        }
+      } else {
+        server = stalkServer.createChannelServer(options);
+      }
+    });
+
+  });
+
+}else{
+
+  var pidFilePath = utils.getPidFilePath(options['home'], 'SESSION', options['port']);
+  if (fs.existsSync(pidFilePath)) fs.unlinkSync(pidFilePath);
+  var pid = require('../lib/pid').create(pidFilePath);
+  pid.removeOnExit();
+
+  server = stalkServer.createSessionServer(options);
+
+}
