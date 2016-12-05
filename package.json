@@ -12,7 +12,13 @@
       "email": "0nlyoung7@gmail.com"
     }
   ],
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:S5Platform/stalk-messenger-server.git"
+  },
+  "scripts": {
+    "start": "./bin/start"
+  },
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -22,9 +28,6 @@
     "parse": "^1.9.2",
     "parse-server": "^2.2.23",
     "xpush": "github:xpush/node-xpush"
-  },
-  "scripts": {
-    "start": "./bin/start"
   },
   "engines": {
     "node": ">=4.3"
