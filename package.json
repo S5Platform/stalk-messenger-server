@@ -1,5 +1,5 @@
 {
-  "name": "stalk-messengerserver",
+  "name": "stalk-messenger-server",
   "version": "0.1.0",
   "description": "stalk server, session and channel server",
   "contributors": [
@@ -12,6 +12,15 @@
       "email": "0nlyoung7@gmail.com"
     }
   ],
+  "bugs": {
+    "url": "https://github.com/s5platform/stalk-messenger-server/issues",
+    "email": "stalk.software@gmail.com"
+  },
+  "bin": {
+    "stalk": "bin/start",
+    "stalk-session": "bin/start",
+    "stalk-channel": "bin/start channel"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:S5Platform/stalk-messenger-server.git"
@@ -26,7 +35,8 @@
     "express": "^4.14.0",
     "optimist": "^0.6.1",
     "parse": "^1.9.2",
-    "parse-server": "^2.2.23",
+    "parse-server": "^2.3.1",
+    "uuid": "^3.0.1",
     "xpush": "github:xpush/node-xpush"
   },
   "engines": {

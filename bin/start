@@ -46,7 +46,6 @@ if (argv.h || argv.help) {
   return console.log(help);
 }
 
-
 var loadJsonSync = function(filePath) {
   if( filePath ){
     try {
@@ -95,6 +94,7 @@ if(options.type == 'session'){
   options['appName']  = config.appName || process.env.APP_NAME || options.app;
   options['publicServerURL']  = config.publicServerURL || process.env.PUBLIC_SERVER_URL;
   options['verifyUserEmails'] = config.verifyUserEmails || !!+(process.env.VERIFY_USER_EMAILS) || false;
+
   var emailAdapter = config.emailAdapter || process.env.EMAIL_ADAPTER;
   if(emailAdapter) options['emailAdapter'] = loadJsonSync(emailAdapter);
 
