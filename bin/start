@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fs    = require('fs');
+var path  = require('path');
 var net   = require('net');
 var argv  = require('optimist').argv;
 var stalkServer = require('../lib/index');
@@ -45,18 +46,21 @@ if (argv.h || argv.help) {
   return console.log(help);
 }
 
-// (optional) load configutation file
 
-var config = {};
-if( argv.config ){
-  try {
-    var data = fs.readFileSync(argv.config);
-    config = JSON.parse(data.toString());
-  } catch (ex) {
-    console.error('Error starting session server: ' + ex);
-    process.exit(1);
+var loadJsonSync = function(filePath) {
+  if( filePath ){
+    try {
+      var data = fs.readFileSync(filePath);
+      return JSON.parse(data.toString());
+    } catch (ex) {
+      console.error('Error starting session server: ' + ex);
+      process.exit(1);
+    }
   }
-}
+  return {};
+};
+
+var config = loadJsonSync(argv.config);
 
 // setting options
 
@@ -66,12 +70,6 @@ options['port'] = argv.port || config.port || process.env.PORT || 8080;
 
 options['zookeeper'] = config.zookeeper || process.env.ZOOKEEPER;
 options['redis'] = config.redis || process.env.REDIS;
-
-/* ONLY FOR SESSION SERVER */
-options['mongodb'] = config.mongodb || process.env.MONGODB;
-options['app'] = config.app || process.env.APP_ID || 'STALK';
-options['master'] = config.master || process.env.MASTER_KEY || 's3cR3T';
-options['push'] = utils.getPushConfig();
 
 var homeDir = config.home || process.env.HOME_DIR;
 if (homeDir){
@@ -85,6 +83,22 @@ if (homeDir){
 options['type'] = argv.type || config.type || process.env.TYPE || 'session';
 if(argv.session) options['type'] = 'session';
 if(argv.channel) options['type'] = 'channel';
+
+/* ONLY FOR SESSION SERVER */
+if(options.type == 'session'){
+
+  options['mongodb']  = config.mongodb || process.env.MONGODB;
+  options['app']      = config.app || process.env.APP_ID || 'STALK';
+  options['master']   = config.master || process.env.MASTER_KEY || 's3cR3T';
+  options['push']     = utils.getPushConfig();
+  options['cloud']    = config.cloud || process.env.CLOUD || path.resolve(__dirname, '../lib/cloud/main.js');
+  options['appName']  = config.appName || process.env.APP_NAME || options.app;
+  options['publicServerURL']  = config.publicServerURL || process.env.PUBLIC_SERVER_URL;
+  options['verifyUserEmails'] = config.verifyUserEmails || !!+(process.env.VERIFY_USER_EMAILS) || false;
+  var emailAdapter = config.emailAdapter || process.env.EMAIL_ADAPTER;
+  if(emailAdapter) options['emailAdapter'] = loadJsonSync(emailAdapter);
+
+}
 
 // start server
 console.log('\n    ##### Options #####\n',options,'\n\n');
