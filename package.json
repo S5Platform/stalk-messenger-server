@@ -1,6 +1,6 @@
 {
   "name": "stalk-messenger-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "stalk server, session and channel server",
   "contributors": [
     {
@@ -17,9 +17,7 @@
     "email": "stalk.software@gmail.com"
   },
   "bin": {
-    "stalk": "bin/start",
-    "stalk-session": "bin/start",
-    "stalk-channel": "bin/start channel"
+    "stalk": "bin/start"
   },
   "repository": {
     "type": "git",
