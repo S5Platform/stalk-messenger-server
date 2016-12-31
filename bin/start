@@ -90,18 +90,20 @@ if(options.type == 'session'){
   options['app']      = config.app || process.env.APP_ID || 'STALK';
   options['master']   = config.master || process.env.MASTER_KEY || 's3cR3T';
   options['push']     = utils.getPushConfig();
-  options['cloud']    = config.cloud || process.env.CLOUD || path.resolve(__dirname, '../lib/cloud/main.js');
+  options['cloud']    = config.cloud || process.env.CLOUD || path.resolve(__dirname, '../lib/cloud/index.js');
   options['appName']  = config.appName || process.env.APP_NAME || options.app;
   options['publicServerURL']  = config.publicServerURL || process.env.PUBLIC_SERVER_URL;
   options['verifyUserEmails'] = config.verifyUserEmails || !!+(process.env.VERIFY_USER_EMAILS) || false;
 
-  var emailAdapter = config.emailAdapter || process.env.EMAIL_ADAPTER;
-  if(emailAdapter) options['emailAdapter'] = loadJsonSync(emailAdapter);
+  if(config.emailAdapter) options['emailAdapter'] = config.emailAdapter;
+  if(process.env.EMAIL_ADAPTER_FILE) options['emailAdapter'] = loadJsonSync(emailAdapterFile);
 
+  if(options['emailAdapter']) {
+    if(!options.emailAdapter.module.startsWith('/')){
+      options.emailAdapter.module = path.resolve(process.cwd(), options.emailAdapter.module )
+    }
+  }
 }
-
-// start server
-console.log('\n    ##### Options #####\n',options,'\n\n');
 
 options['logo'] = [
   " ",
