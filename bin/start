@@ -98,11 +98,6 @@ if(options.type == 'session'){
   if(config.emailAdapter) options['emailAdapter'] = config.emailAdapter;
   if(process.env.EMAIL_ADAPTER_FILE) options['emailAdapter'] = loadJsonSync(emailAdapterFile);
 
-  if(options['emailAdapter']) {
-    if(!options.emailAdapter.module.startsWith('/')){
-      options.emailAdapter.module = path.resolve(process.cwd(), options.emailAdapter.module )
-    }
-  }
 }
 
 options['logo'] = [
