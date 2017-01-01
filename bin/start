@@ -98,6 +98,13 @@ if(options.type == 'session'){
   if(config.emailAdapter) options['emailAdapter'] = config.emailAdapter;
   if(process.env.EMAIL_ADAPTER_FILE) options['emailAdapter'] = loadJsonSync(emailAdapterFile);
 
+  if(config.static && config.static.folder){
+    options['static'] = {
+      path: config.static.path || '/public',
+      folder: path.resolve(process.cwd(), config.static.folder)
+    };
+  }
+
 }
 
 options['logo'] = [
