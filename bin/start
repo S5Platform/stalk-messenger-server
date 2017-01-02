@@ -15,30 +15,40 @@ var help = [
   "Starts a STALK Server using the specified command-line options",
   "",
   "Examples:",
+  "",
   "  $ start --session",
   "  $ start --session --config ../config.json",
   "  $ HOST=im.stalk.io PORT=8000 MASTER_KEY=ABCDE12345 start --session ",
   "  $ start --channel",
   "  $ HOST=channel.stalk.io PORT=9000 start session ",
   "",
+  "",
   "Options:",
+  "",
   "  --port   PORT       Port that the channel server should run on",
   "  --config OUTFILE    Location of the configuration file for the server",
   "  --host   DOMAIN     Hostname",
   "  -h, --help          You're staring at it",
   "",
   "Environments:",
+  "",
   "  TYPE         server type [session | channel] (default : session)",
   "  HOST         hostname (default : 0.0.0.0)",
   "  PORT         port (default : 0.0.0.0)",
+  "  SECURE       secure protocal [true | false] (default : false)",
   "  ZOOKEEPER    zookeeper address (default : 127.0.0.1:2181)",
   "  REDIS        redis address (default : 127.0.0.1:6379)",
   "  HOME_DIR     log directory (default : ~/.xpush)",
   "",
-  " * only for session server * ",
-  "  APP_ID       application id (default : STALK)",
+  "  * only for session server * ",
+  "",
+  "  APP          application id (default : STALK)",
+  "  APP_NAME     application name (default : stalk)",
   "  MASTER_KEY   master key  (default : s3cR3T)",
   "  MONGODB      mongodb address (default : mongodb://localhost:27017/stalk-messenger )",
+  "  CLOUD        file path for cloud implementation",
+  "  VERIFY_USER_EMAILS    verifiy user email [true | false]",
+  "  EMAIL_ADAPTER_FILE    file path for email adapter config",
   ""
 ].join('\n');
 
@@ -62,10 +72,12 @@ var loadJsonSync = function(filePath) {
 var config = loadJsonSync(argv.config);
 
 // setting options
-
+console.log(argv);
+console.log(argv.host || config.host || process.env.HOST || utils.getIP());
 var options = {};
 options['host'] = argv.host || config.host || process.env.HOST || utils.getIP();
 options['port'] = argv.port || config.port || process.env.PORT || 8080;
+options['secure'] = config.secure || process.env.SECURE || false; // true(HTTP) or false(HTTPS)
 
 options['zookeeper'] = config.zookeeper || process.env.ZOOKEEPER;
 options['redis'] = config.redis || process.env.REDIS;
@@ -83,16 +95,21 @@ options['type'] = argv.type || config.type || process.env.TYPE || 'session';
 if(argv.session) options['type'] = 'session';
 if(argv.channel) options['type'] = 'channel';
 
+var protocal = options.secure ? 'https://' : 'http://';  // Don't forget to change to https if needed
+
 /* ONLY FOR SESSION SERVER */
 if(options.type == 'session'){
+
+  options['parsePath']        = config.parsePath || process.env.PARSE_PATH || '/parse';
+  options['serverURL']        = config.serverUrl || process.env.SERVER_URL || protocal + options.host + ':' + options.port + options.parsePath;
+  options['publicServerURL']  = config.publicServerUrl || process.env.PUBLIC_SERVER_URL || protocal + options.host + ':' + options.port + options.parsePath;
 
   options['mongodb']  = config.mongodb || process.env.MONGODB;
   options['app']      = config.app || process.env.APP_ID || 'STALK';
   options['master']   = config.master || process.env.MASTER_KEY || 's3cR3T';
-  options['push']     = utils.getPushConfig();
+  options['push']     = utils.getPushConfig(); // @ TODO HAVE TO IMPLEMENT !!
   options['cloud']    = config.cloud || process.env.CLOUD || path.resolve(__dirname, '../lib/cloud/index.js');
   options['appName']  = config.appName || process.env.APP_NAME || options.app;
-  options['publicServerURL']  = config.publicServerURL || process.env.PUBLIC_SERVER_URL;
   options['verifyUserEmails'] = config.verifyUserEmails || !!+(process.env.VERIFY_USER_EMAILS) || false;
 
   if(config.emailAdapter) options['emailAdapter'] = config.emailAdapter;
@@ -140,7 +157,6 @@ var checkPort = function (callback, port) {
     })
     .listen(port);
 };
-
 
 if( options['type'] == 'channel' ){
 
