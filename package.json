@@ -24,7 +24,8 @@
     "url": "git@github.com:S5Platform/stalk-messenger-server.git"
   },
   "scripts": {
-    "start": "./bin/start"
+    "start": "./bin/start",
+    "dashboard": "parse-dashboard"
   },
   "license": "MIT",
   "dependencies": {
@@ -40,5 +41,8 @@
   },
   "engines": {
     "node": ">=4.3"
+  },
+  "devDependencies": {
+    "parse-dashboard": "^1.0.22"
   }
 }
