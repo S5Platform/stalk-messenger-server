@@ -91,6 +91,15 @@ if (homeDir){
   }
 }
 
+var httpsServerOptions;
+if( config.ssl ) {
+  httpsServerOptions = {
+    key: fs.readFileSync(config.ssl.key),
+    cert: fs.readFileSync(config.ssl.cert)
+  }
+}
+options['httpsServerOptions'] = httpsServerOptions;
+
 options['type'] = argv.type || config.type || process.env.TYPE || 'session';
 if(argv.session) options['type'] = 'session';
 if(argv.channel) options['type'] = 'channel';
