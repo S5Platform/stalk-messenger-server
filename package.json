@@ -37,7 +37,8 @@
     "parse-server": "^2.3.1",
     "parse-server-mailgun-adapter-template": "github:S5Platform/parse-server-mailgun-adapter-template",
     "uuid": "^3.0.1",
-    "xpush": "github:xpush/node-xpush"
+    "xpush": "github:xpush/node-xpush",
+    "stalk-messenger-options": "github:S5Platform/stalk-messenger-options"
   },
   "engines": {
     "node": ">=4.3"
