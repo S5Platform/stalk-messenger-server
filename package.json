@@ -29,16 +29,16 @@
   },
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.17.1",
     "cors": "^2.8.1",
-    "express": "^4.14.0",
+    "express": "^4.15.2",
     "optimist": "^0.6.1",
     "parse": "^1.9.2",
-    "parse-server": "^2.3.1",
+    "parse-server": "^2.3.7",
     "parse-server-mailgun-adapter-template": "github:S5Platform/parse-server-mailgun-adapter-template",
+    "stalk-messenger-options": "github:S5Platform/stalk-messenger-options",
     "uuid": "^3.0.1",
-    "xpush": "github:xpush/node-xpush",
-    "stalk-messenger-options": "github:S5Platform/stalk-messenger-options"
+    "xpush": "github:xpush/node-xpush"
   },
   "engines": {
     "node": ">=4.3"
