@@ -29,15 +29,17 @@
   },
   "license": "MIT",
   "dependencies": {
+    "apn": "^2.1.4",
     "body-parser": "^1.17.1",
     "cors": "^2.8.1",
     "express": "^4.15.2",
+    "node-gcm": "^0.14.5",
     "optimist": "^0.6.1",
     "parse": "^1.9.2",
     "parse-server": "^2.3.7",
     "parse-server-mailgun-adapter-template": "github:S5Platform/parse-server-mailgun-adapter-template",
-    "stalk-messenger-options": "github:S5Platform/stalk-messenger-options",
     "parse-server-push-adapter": "^2.0.0-alpha.1",
+    "stalk-messenger-options": "github:S5Platform/stalk-messenger-options",
     "uuid": "^3.0.1",
     "xpush": "github:xpush/node-xpush"
   },
