@@ -36,7 +36,7 @@
     "node-gcm": "^0.14.5",
     "optimist": "^0.6.1",
     "parse": "^1.9.2",
-    "parse-server": "../parse-server",
+    "parse-server": "^2.5.3",
     "parse-server-mailgun-adapter-template": "github:S5Platform/parse-server-mailgun-adapter-template",
     "parse-server-push-adapter": "^2.0.0-alpha.1",
     "stalk-messenger-options": "github:S5Platform/stalk-messenger-options",
