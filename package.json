@@ -41,7 +41,8 @@
     "parse-server-push-adapter": "^2.0.0-alpha.1",
     "stalk-messenger-options": "github:S5Platform/stalk-messenger-options",
     "uuid": "^3.0.1",
-    "xpush": "github:xpush/node-xpush"
+    "xpush": "github:xpush/node-xpush",
+    "parse-server-s3-adapter": "^1.2.0"
   },
   "engines": {
     "node": ">=4.3"
