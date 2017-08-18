@@ -58,6 +58,8 @@ if (argv.h || argv.help) {
   return console.log(help);
 }
 
+process.setMaxListeners(0);
+
 var checkPort = function (callback, port) {
   port = port || 8080;
 
